@@ -2,5 +2,10 @@
     "version": 2,
     "github": {
         "silent": true
+    },
+    "functions": {
+        "api/index.js": {
+            "includeFiles": "api/cnn.onnx"
+        }
     }
 }

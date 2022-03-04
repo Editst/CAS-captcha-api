@@ -2,6 +2,7 @@ const express = require('express')
 const multer = require('multer')
 const getPixels = require("get-pixels")
 const onnx = require('onnxruntime-node')
+const join = require('path');
 
 const app = express()
 const storage = multer.memoryStorage()
@@ -71,7 +72,7 @@ async function recognize(imgArray) {
     var strs = ''
 
     // initialize
-    const myOnnxSession = await onnx.InferenceSession.create('./cnn.onnx')
+    const myOnnxSession = await onnx.InferenceSession.create(join(__dirname, 'api', 'cnn.onnx'))
     var input = new onnx.Tensor('float32', imgArray.flat(2), [1, 3, width, height])
     var feeds = { 'input.1': input }
     var output = await myOnnxSession.run(feeds)
