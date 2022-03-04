@@ -18,10 +18,10 @@ module.exports = app
 
 app.use(function (req, res, next) {
     if (!req.headers.authorization || req.headers.authorization !== process.env.API_TOKEN) {
-        return res.status(403)
+        return res.status(403).json({error: '403 Forbidden'})
     }
     if (req.url !== '/api') {
-        return res.status(403)
+        return res.status(403).json({error: '403 Forbidden'})
     }
     next()
 })
