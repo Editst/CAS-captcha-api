@@ -5,7 +5,7 @@
     },
     "functions": {
         "api/index.js": {
-            "includeFiles": "api/cnn.onnx"
+            "includeFiles": "cnn.onnx"
         }
     }
 }
