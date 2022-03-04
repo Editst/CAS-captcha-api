@@ -2,7 +2,7 @@ const express = require('express')
 const multer = require('multer')
 const getPixels = require("get-pixels")
 const onnx = require('onnxruntime-node')
-const join = require('path');
+const join = require('path').join
 
 const app = express()
 const storage = multer.memoryStorage()
