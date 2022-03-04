@@ -71,7 +71,7 @@ async function recognize(imgArray) {
     var strs = ''
 
     // initialize
-    const myOnnxSession = await onnx.InferenceSession.create('./api/cnn.onnx')
+    const myOnnxSession = await onnx.InferenceSession.create('./cnn.onnx')
     var input = new onnx.Tensor('float32', imgArray.flat(2), [1, 3, width, height])
     var feeds = { 'input.1': input }
     var output = await myOnnxSession.run(feeds)
