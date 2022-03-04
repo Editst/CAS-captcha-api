@@ -10,15 +10,17 @@ import json
 
 captcha_url = "https://cas.sysu.edu.cn/cas/captcha.jsp"
 imbyte = requests.get(captcha_url).content
-headers = {'authorization': 'TOKEN'}
-r = requests.post(f'https://cascaptcha.vercel.app/api', files={'imgfile': ('captcha.jpg', imbyte)},
-                  headers=headers)
 
-res = json.loads(r.text)
-if res['success']:
-    return res['captcha']
-return False
+def recognize(imbyte):
+    headers = {'authorization': 'TOKEN'}
+    r = requests.post(f'https://cascaptcha.vercel.app/api', files={'imgfile': ('captcha.jpg', imbyte)},
+                    headers=headers)
+    res = json.loads(r.text)
+    if res['success']:
+        return res['captcha']
+    return False
 
+print(recognize(imbyte))
 ```
 
 ## 注意
