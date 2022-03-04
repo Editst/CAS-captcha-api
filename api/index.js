@@ -20,14 +20,14 @@ app.use(function (req, res, next) {
     if (!req.headers.authorization || req.headers.authorization !== process.env.API_TOKEN) {
         return res.status(403)
     }
-    if (req.url !== '/api/recognize') {
+    if (req.url !== '/api') {
         return res.status(403)
     }
     next()
 })
 
 
-app.post('/api/recognize', upload.single('imgfile'), async (req, res) => {
+app.post('/api', upload.single('imgfile'), async (req, res) => {
     getPixels(req.file.buffer, "image/jpg", async (err, pixels) => {
         if (err) {
             console.log("Bad image path")
