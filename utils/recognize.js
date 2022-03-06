@@ -2,8 +2,8 @@ const getPixels = require("get-pixels")
 const onnx = require('onnxruntime-node')
 
 
-export default async(imgPath, onnxPath, cb) => {
-    getPixels(imgPath, "image/jpg", (err, pixels) => {
+module.exports = (imgPath, onnxPath, cb) => {
+    getPixels(imgPath, "image/jpg", async (err, pixels) => {
         if (err) {
             cb(err, "Bad image path")
             return

@@ -13,7 +13,7 @@ const limits = {
     fields: 1
 }
 const upload = multer({ storage: storage, limits: limits })
-const cnnPath = join(__dirname, './cnn.onnx')
+const cnnPath = join(__dirname, '../model', 'cnn.onnx')
 
 module.exports = app
 
@@ -24,7 +24,7 @@ app.use(function (req, res, next) {
         }
     }
     if (req.url !== '/api') {
-        return res.status(403).json({error: '403 Forbidden'})
+        return res.status(403).json({ error: '403 Forbidden' })
     }
     next()
 })
@@ -33,6 +33,7 @@ app.use(function (req, res, next) {
 app.post('/api', upload.single('imgfile'), (req, res) => {
     recognize(req.file.buffer, cnnPath, (err, result) => {
         if (err) {
+            console.log(err)
             return res.json({ success: 0, captcha: result })
         }
         return res.json({ success: 1, captcha: result })
