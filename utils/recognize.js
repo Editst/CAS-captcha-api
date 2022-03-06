@@ -5,8 +5,7 @@ const onnx = require('onnxruntime-node')
 module.exports = (imgPath, onnxPath, cb) => {
     getPixels(imgPath, "image/jpg", async (err, pixels) => {
         if (err) {
-            cb(err, "Bad image path")
-            return
+            return cb(err, "Bad image")
         }
         let imgArray = convert2Array(pixels.data, 90, 32)
         let recResult = await recognize(imgArray, onnxPath)

@@ -37,12 +37,19 @@ app.use(function (req, res, next) {
 
 app.post('/api', (req, res) => {
     upload(req, res, (err) => {
+        let imgBuffer
         if (err) {
             return res.status(400).json({ error: 'Wrong file' })
         }
-        recognize(req.file.buffer, cnnPath, (err, result) => {
+        try {
+            imgBuffer = req.file.buffer
+        }
+        catch (e) {
+            return res.status(400).json({ error: 'Wrong file' })
+        }
+        recognize(imgBuffer, cnnPath, (err, result) => {
             if (err) {
-                return res.json({ success: 0, captcha: result, error: err })
+                return res.json({ success: 0, captcha: result})
             }
             return res.json({ success: 1, captcha: result })
         })
