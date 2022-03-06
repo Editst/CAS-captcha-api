@@ -19,12 +19,15 @@ module.exports = app
 
 app.use(function (req, res, next) {
     if (process.env.API_TOKEN) {
-        if (!req.headers.authorization || req.headers.authorization !== process.env.API_TOKEN) {
-            return res.status(403).json({ error: '403 Forbidden Need Token' })
+        if (!req.headers.authorization) {
+            return res.status(403).json({ error: 'Need authorization token' })
+        }
+        if (req.headers.authorization !== process.env.API_TOKEN) {
+            return res.status(403).json({ error: 'Wrong authorization token' })
         }
     }
     if (req.url !== '/api') {
-        return res.status(403).json({ error: '403 Forbidden' })
+        return res.status(403).json({ error: 'Wrong url' })
     }
     next()
 })
