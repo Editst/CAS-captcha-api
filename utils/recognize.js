@@ -2,15 +2,15 @@ const getPixels = require("get-pixels")
 const onnx = require('onnxruntime-node')
 
 
-export default async(imgPath, cb) => {
+export default async(imgPath, onnxPath, cb) => {
     getPixels(imgPath, "image/jpg", (err, pixels) => {
         if (err) {
-            callback(err, "Bad image path")
+            cb(err, "Bad image path")
             return
         }
         let imgArray = convert2Array(pixels.data, 90, 32)
-        let recResult = await recognize(imgArray, cnnPath)
-        callback(null, recResult)
+        let recResult = await recognize(imgArray, onnxPath)
+        cb(null, recResult)
     })
 }
 
