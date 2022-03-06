@@ -2,18 +2,20 @@ const express = require('express')
 const multer = require('multer')
 const join = require('path').join
 const recognize = require('../utils/recognize')
+const cnnPath = join(__dirname, '../model', 'cnn.onnx')
 
 const app = express()
-const storage = multer.memoryStorage()
-const limits = {
-    fieldSize: 10 * 1024,
-    fileSize: 10 * 1024,
-    files: 1,
-    parts: 1,
-    fields: 1
-}
-const upload = multer({ storage: storage, limits: limits })
-const cnnPath = join(__dirname, '../model', 'cnn.onnx')
+
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: {
+        fieldSize: 10 * 1024,
+        fileSize: 10 * 1024,
+        files: 1,
+        parts: 1,
+        fields: 1
+    }
+}).single('imgfile')
 
 module.exports = app
 
@@ -33,12 +35,16 @@ app.use(function (req, res, next) {
 })
 
 
-app.post('/api', upload.single('imgfile'), (req, res) => {
-    recognize(req.file.buffer, cnnPath, (err, result) => {
+app.post('/api', (req, res) => {
+    upload(req, res, (err) => {
         if (err) {
-            console.log(err)
-            return res.json({ success: 0, captcha: result })
+            return res.status(400).json({ error: 'Wrong file' })
         }
-        return res.json({ success: 1, captcha: result })
+        recognize(req.file.buffer, cnnPath, (err, result) => {
+            if (err) {
+                return res.json({ success: 0, captcha: result, error: err })
+            }
+            return res.json({ success: 1, captcha: result })
+        })
     })
 })
