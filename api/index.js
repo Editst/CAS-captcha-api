@@ -1,8 +1,7 @@
 const express = require('express')
 const multer = require('multer')
-const getPixels = require("get-pixels")
-const onnx = require('onnxruntime-node')
 const join = require('path').join
+const recognize = require('../utils/recognize')
 
 const app = express()
 const storage = multer.memoryStorage()
@@ -14,6 +13,7 @@ const limits = {
     fields: 1
 }
 const upload = multer({ storage: storage, limits: limits })
+const cnnPath = join(__dirname, './cnn.onnx')
 
 module.exports = app
 
@@ -28,62 +28,11 @@ app.use(function (req, res, next) {
 })
 
 
-app.post('/api', upload.single('imgfile'), async (req, res) => {
-    getPixels(req.file.buffer, "image/jpg", async (err, pixels) => {
+app.post('/api', upload.single('imgfile'), (req, res) => {
+    recognize(req.file.buffer, cnnPath, (err, result) => {
         if (err) {
-            console.log("Bad image path")
-            res.json({
-                success: -1,
-                captcha: ''
-            })
-            return
+            return res.json({ success: 0, captcha: result })
         }
-        var imgArray = convert2Array(pixels.data, 90, 32)
-        var reco = await recognize(imgArray)
-        console.log(reco)
-        res.json({
-            success: 1,
-            captcha: reco
-        })
+        return res.json({ success: 1, captcha: result })
     })
 })
-
-
-function convert2Array(imgData, width, height) {
-    // convert to 3*90*32
-    var imgArray = new Array(3) // channel=3 RGB
-    for (var channel = 0; channel != 3; ++channel) {
-        imgArray[channel] = new Array(width)
-        for (var i = 0; i != width; ++i) {
-            imgArray[channel][i] = new Array(height)
-            for (var j = 0; j != height; ++j) {
-                var index = (i + j * width) * 4
-                imgArray[channel][i][j] = imgData[index + channel]
-            }
-        }
-    }
-    return imgArray
-}
-
-/** must be 90*32 **/
-async function recognize(imgArray) {
-    var width = 90
-    var height = 32
-    var strs = ''
-
-    // initialize
-    const myOnnxSession = await onnx.InferenceSession.create(join(__dirname, '../cnn.onnx'))
-    var input = new onnx.Tensor('float32', imgArray.flat(2), [1, 3, width, height])
-    var feeds = { 'input.1': input }
-    var output = await myOnnxSession.run(feeds)
-    const outputData = output[37].data
-
-    for (var t = 0; t != 4; ++t) {
-        ans = outputData.indexOf(Math.max.apply(null, outputData.slice(t * 36, (t + 1) * 36))) - t * 36
-        if (ans >= 0 && ans < 26)
-            strs += String.fromCharCode(ans + 'a'.charCodeAt(0))
-        else
-            strs += String.fromCharCode(ans - 26 + '0'.charCodeAt(0))
-    }
-    return strs
-}
