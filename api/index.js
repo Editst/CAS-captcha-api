@@ -21,15 +21,15 @@ module.exports = app
 
 app.use(function (req, res, next) {
     if (process.env.API_TOKEN) {
-        if (!req.headers.authorization) {
-            return res.status(403).json({ error: 'Need authorization token' })
+        if (!req.headers.Authorization) {
+            return res.status(401).json({ success: false, error: 'Unauthorized' })
         }
-        if (req.headers.authorization !== process.env.API_TOKEN) {
-            return res.status(403).json({ error: 'Wrong authorization token' })
+        if (req.headers.Authorization !== process.env.API_TOKEN) {
+            return res.status(403).json({ success: false, error: 'Forbidden' })
         }
     }
     if (req.url !== '/api') {
-        return res.status(403).json({ error: 'Wrong url' })
+        return res.status(404).json({ success: false, error: 'Not Found' })
     }
     next()
 })
@@ -39,19 +39,19 @@ app.post('/api', (req, res) => {
     upload(req, res, (err) => {
         let imgBuffer
         if (err) {
-            return res.status(400).json({ error: 'Wrong file' })
+            return res.status(400).json({ success: false, error: 'Wrong file' })
         }
         try {
             imgBuffer = req.file.buffer
         }
         catch (e) {
-            return res.status(400).json({ error: 'Wrong file' })
+            return res.status(400).json({ success: false, error: 'Wrong file' })
         }
         recognize(imgBuffer, cnnPath, (err, result) => {
             if (err) {
-                return res.json({ success: 0, captcha: result})
+                return res.status(400).json({ success: false, error: result })
             }
-            return res.json({ success: 1, captcha: result })
+            return res.status(200).json({ success: true, captcha: result })
         })
     })
 })

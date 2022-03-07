@@ -45,7 +45,7 @@ async function recognize(imgArray, onnxPath) {
     const outputData = output[37].data
 
     for (var t = 0; t != 4; ++t) {
-        ans = outputData.indexOf(Math.max.apply(null, outputData.slice(t * 36, (t + 1) * 36))) - t * 36
+        var ans = outputData.indexOf(Math.max.apply(null, outputData.slice(t * 36, (t + 1) * 36))) - t * 36
         if (ans >= 0 && ans < 26)
             strs += String.fromCharCode(ans + 'a'.charCodeAt(0))
         else

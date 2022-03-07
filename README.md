@@ -12,7 +12,7 @@ captcha_url = "https://cas.sysu.edu.cn/cas/captcha.jsp"
 imbyte = requests.get(captcha_url).content
 
 def recognize(imbyte):
-    headers = {'authorization': 'TOKEN'}
+    headers = {'Authorization': 'TOKEN'}
     r = requests.post(f'https://cascaptcha.vercel.app/api', files={'imgfile': ('captcha.jpg', imbyte)},
                     headers=headers)
     res = json.loads(r.text)
