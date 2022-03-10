@@ -21,7 +21,7 @@ module.exports = app
 
 app.use(function (req, res, next) {
     if (process.env.API_TOKEN) {
-        if (!req.headers.Authorization) {
+        if (!req.headers.authorization) {
             return res.status(401).json({ success: false, error: 'Unauthorized' })
         }
         if (req.headers.Authorization !== process.env.API_TOKEN) {
