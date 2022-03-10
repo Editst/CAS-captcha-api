@@ -24,7 +24,7 @@ app.use(function (req, res, next) {
         if (!req.headers.authorization) {
             return res.status(401).json({ success: false, error: 'Unauthorized' })
         }
-        if (req.headers.Authorization !== process.env.API_TOKEN) {
+        if (req.headers.authorization !== process.env.API_TOKEN) {
             return res.status(403).json({ success: false, error: 'Forbidden' })
         }
     }
